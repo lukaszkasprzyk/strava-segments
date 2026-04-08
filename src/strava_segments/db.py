@@ -234,8 +234,8 @@ def get_segments_without_details(conn, limit: int = 100) -> list[dict]:
 
 
 def log_api_request(conn, endpoint: str, status_code: int, headers: dict):
-    usage_15, usage_daily = _parse_ratelimit(headers.get("X-RateLimit-Usage", ""))
-    limit_15, limit_daily = _parse_ratelimit(headers.get("X-RateLimit-Limit", ""))
+    usage_15, usage_daily = _parse_ratelimit(headers.get("x-ratelimit-usage", "") or headers.get("X-RateLimit-Usage", ""))
+    limit_15, limit_daily = _parse_ratelimit(headers.get("x-ratelimit-limit", "") or headers.get("X-RateLimit-Limit", ""))
     with conn.cursor() as cur:
         cur.execute(
             f"""

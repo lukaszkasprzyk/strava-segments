@@ -69,10 +69,9 @@ class StravaClient:
         log.info("Token refreshed")
 
     def _handle_429(self, resp: httpx.Response):
-        usage = resp.headers.get("X-RateLimit-Usage", "?")
-        limit = resp.headers.get("X-RateLimit-Limit", "?")
+        headers = {k: v for k, v in resp.headers.items() if "rate" in k.lower() or "limit" in k.lower() or "retry" in k.lower()}
         wait = _seconds_to_next_15min_window()
-        log.warning(f"Got 429, usage={usage}, limit={limit}, waiting {wait:.0f}s until next 15-min window")
+        log.warning(f"Got 429, headers={headers}, waiting {wait:.0f}s until next 15-min window")
         time.sleep(wait)
 
     def _log_request(self, endpoint: str, resp: httpx.Response):
