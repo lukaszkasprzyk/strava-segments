@@ -1,6 +1,6 @@
 # strava-segments
 
-Crawler segmentów Strava z danymi o nawierzchni z OpenStreetMap.
+Strava segment crawler with surface type detection from OpenStreetMap.
 
 ## Setup
 
@@ -19,37 +19,40 @@ STRAVA_REFRESH_TOKEN=...
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
 ```
 
-## Komendy
+## Commands
 
 ```bash
-# Inicjalizacja bazy (tworzenie tabel, migracje)
+# Initialize database (create tables, run migrations)
 strava-segments init-db
 
-# Generowanie siatki tile'ów (domyślnie 50km wokół Krakowa)
+# Generate grid tiles (default: 50km radius around Kraków)
 strava-segments generate-grid
 
-# Crawling segmentów ze Strava API
-# --phase: explore (tylko odkrywanie), details (tylko szczegóły), both (domyślnie)
-# --origin-lat/--origin-lng: zacznij od najbliższych tile'ów do tego punktu
+# Crawl segments from Strava API
+# --phase: explore (discover only), details (fetch details only), both (default)
+# --origin-lat/--origin-lng: start from tiles closest to this point
 strava-segments run
 strava-segments run --origin-lat 50.026 --origin-lng 19.908
 
-# Pobieranie nawierzchni z OpenStreetMap (niezależny proces)
+# Fetch surface type from OpenStreetMap (independent process)
 strava-segments surface
 
-# Status crawla
+# Reclassify surface types from stored OSM data (no API calls)
+strava-segments reclassify
+
+# Show crawl progress
 strava-segments status
 ```
 
-## Uruchamianie w tle
+## Running in background
 
 ```bash
 nohup strava-segments run --origin-lat 50.026 --origin-lng 19.908 > /tmp/strava-crawler.log 2>&1 &
 nohup strava-segments surface > /tmp/strava-surface.log 2>&1 &
 
-# Podgląd logów
+# Watch logs
 tail -f /tmp/strava-crawler.log
 tail -f /tmp/strava-surface.log
 ```
 
-Wszystkie procesy można bezpiecznie przerwać Ctrl+C (lub kill) i wznowić — kontynuują od miejsca w którym skończyły.
+All processes can be safely interrupted with Ctrl+C (or kill) and resumed — they continue from where they left off.
